@@ -1,0 +1,1 @@
+/  I want a hook that enforces an AI agent to use the latest documentation for coding. Generally this could be done by just creating a hook that enforces context7. However, with context7 caching, this is going to be a more token efficient solution.
