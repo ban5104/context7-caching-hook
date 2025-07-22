@@ -1,27 +1,28 @@
 # Context7 Intelligent Hook System
 
-An advanced Claude Code hook system that enforces Context7 documentation usage with intelligent blocking, autonomous learning, and comprehensive analytics. Built on Claude Code's hook architecture for seamless integration.
+An advanced Claude Code hook system that enforces Context7 documentation usage with **intelligent autonomous learning** from conversation context. Built on Claude Code's hook architecture for seamless integration.
 
 ## Overview
 
-The Context7 system is a sophisticated multi-component hook system that prevents Claude from generating code without relevant documentation context. It uses Claude Code's PreToolUse and PostToolUse hook events to intelligently analyze operations, cache documentation, and continuously improve through machine learning.
+The Context7 system is a sophisticated multi-component hook system that prevents Claude from generating code without relevant documentation context. It uses Claude Code's PreToolUse and PostToolUse hook events to intelligently analyze operations, cache documentation, and **continuously improve through LLM-powered conversation analysis**.
 
 ### Key Features
 
+- **Intelligent Autonomous Learning**: Learns immediately from conversation context, not metrics
+- **LLM-Powered Analysis**: Uses actual LLM feedback to determine documentation effectiveness
+- **Immediate Rule Updates**: Updates rules on first occurrence of mismatch, not after 73+ sessions
+- **Context-Aware**: Understands what users actually want from conversation flow
 - **Claude Code Hook Integration**: Native PreToolUse/PostToolUse event handling with proper JSON output control
 - **Transcript-aware blocking**: Prevents infinite loops by detecting when context was already provided
 - **Framework detection**: Automatically identifies React, FastAPI, Supabase, and 10+ other frameworks
-- **Autonomous learning**: ML-powered pattern analysis and rule optimization
-- **A/B testing system**: Validates rule changes before deployment for continuous improvement
-- **Self-healing**: Automatic error recovery and health monitoring with 99.2% uptime
-- **Predictive caching**: Pre-loads documentation for likely next operations
-- **Advanced analytics**: Comprehensive dashboards and effectiveness tracking
+- **Self-healing**: Automatic error recovery and health monitoring
+- **Safe Rule Updates**: Only modifies JSON configuration, never Python code
 
 ## Claude Code Hook Integration
 
 This system integrates with Claude Code's native hook system using PreToolUse and PostToolUse events:
 
-### Hook Configuration
+### Hook Configuration (Intelligent Mode)
 ```json
 {
   "hooks": {
@@ -42,7 +43,7 @@ This system integrates with Claude Code's native hook system using PreToolUse an
         "hooks": [
           {
             "type": "command",
-            "command": "/path/to/session_tracker.py"
+            "command": "/path/to/intelligent_posttooluse_hook.py"
           }
         ]
       }
@@ -53,34 +54,58 @@ This system integrates with Claude Code's native hook system using PreToolUse an
 
 ### Hook Behavior
 - **PreToolUse**: Analyzes operations and blocks if documentation needed (exit code 2)
-- **PostToolUse**: Tracks session outcomes for learning and analytics
+- **PostToolUse (Intelligent)**: Analyzes conversation context with LLM and updates rules immediately
 - **JSON Output**: Uses structured output for decision control and feedback
+
+### Learning Modes
+
+**Intelligent Mode (Recommended)**:
+```bash
+python3 enable_intelligent_mode.py enable
+```
+- Learns from LLM feedback in conversation
+- Updates rules immediately on first mismatch
+- No thresholds or waiting periods
+
+**Legacy Mode**:
+```bash
+python3 enable_intelligent_mode.py disable
+```
+- Metric-based learning with effectiveness scores
+- Requires multiple sessions before updates
+- Threshold-based decisions
 
 ## Quick Start
 
 1. **Configure Claude Code hooks** - Add the hook configuration to your settings
-2. **Hook activation** - Automatically intercepts Write/Edit operations
-3. **Smart blocking** - Follow provided instructions when documentation is needed
-4. **Learning** - System automatically improves from usage patterns
+2. **Enable intelligent mode** - `python3 enable_intelligent_mode.py enable`
+3. **Hook activation** - Automatically intercepts Write/Edit operations
+4. **Smart blocking** - Follow provided instructions when documentation is needed
+5. **Autonomous learning** - System immediately learns from conversation context and updates rules
 
 ## Project Structure
 
 ```
 context7/
-├── context7_cache_hook.py       # Main hook (handles PreToolUse events)
-├── session_tracker.py           # Tracks operation outcomes
-├── context7_analyzer.py         # CLI analytics and learning
-├── scripts/                     # Cache management utilities
-│   ├── cache_utils.py           # Manual cache operations
-│   ├── sync_to_supabase.py      # Database sync for remote viewing
-│   └── README.md                # Scripts usage guide
-└── src/                         # Core system components
-    ├── db/database_manager.py   # SQLite operations
-    ├── detectors/               # Framework/operation detection
-    ├── extractors/              # Content processing
-    ├── analyzers/               # Pattern analysis
-    ├── learning/                # Rule optimization
-    └── analytics/               # Reporting and dashboards
+├── context7_cache_hook.py              # Main hook (handles PreToolUse events)
+├── intelligent_posttooluse_hook.py     # ✨ Intelligent learning hook (NEW)
+├── session_tracker.py                  # Legacy session tracker
+├── enable_intelligent_mode.py          # Switch between learning modes
+├── test_intelligent_system.py          # Test intelligent learning
+├── context7_analyzer.py                # CLI analytics and learning
+├── scripts/                            # Cache management utilities
+│   ├── cache_utils.py                  # Manual cache operations
+│   ├── sync_to_supabase.py             # Database sync for remote viewing
+│   └── README.md                       # Scripts usage guide
+└── src/                                # Core system components
+    ├── db/database_manager.py          # SQLite operations
+    ├── detectors/                      # Framework/operation detection
+    ├── extractors/                     # Content processing
+    ├── analyzers/                      # Pattern analysis & intelligent learning
+    │   ├── llm_effectiveness_analyzer.py      # Legacy effectiveness analyzer
+    │   └── intelligent_session_analyzer.py   # ✨ LLM-powered analyzer (NEW)
+    ├── learning/                       # Rule optimization
+    └── analytics/                      # Reporting and dashboards
 ```
 
 ## Cache Management
@@ -101,12 +126,29 @@ python3 scripts/cache_utils.py stats
 python3 scripts/cache_utils.py clear "cache_key"
 ```
 
-### Advanced Analytics and Machine Learning
+### Intelligent Learning System (NEW)
 
-The system includes sophisticated learning and analytics capabilities:
+The system now uses **LLM-powered conversation analysis** for immediate autonomous learning:
 
 ```bash
-# Core learning operations
+# Enable intelligent mode
+python3 enable_intelligent_mode.py enable    # Switch to intelligent learning
+python3 enable_intelligent_mode.py check     # Check current mode
+python3 enable_intelligent_mode.py disable   # Switch back to legacy mode
+
+# Test intelligent learning
+python3 test_intelligent_system.py           # Simulate learning scenarios
+
+# Monitor autonomous updates
+tail -f ~/.claude/autonomous_updates.log     # Watch real-time rule updates
+```
+
+### Advanced Analytics (Legacy Mode)
+
+Traditional metric-based learning and analytics:
+
+```bash
+# Core learning operations (legacy)
 ./context7_analyzer.py analyze           # Process unanalyzed sessions
 ./context7_analyzer.py learn             # Run full learning cycle
 ./context7_analyzer.py report            # Generate effectiveness report
@@ -127,11 +169,17 @@ The system includes sophisticated learning and analytics capabilities:
 
 ### Learning Intelligence Features
 
+**Intelligent Mode**:
+- **Conversation Context Analysis**: Understands user intent from conversation flow
+- **LLM Feedback Detection**: Recognizes when LLM says documentation was wrong
+- **Immediate Rule Updates**: Fixes problems on first occurrence
+- **Zero Thresholds**: No waiting for statistical significance
+
+**Legacy Mode**:
 - **Autonomous Pattern Learning**: Detects common operation sequences and framework workflows
 - **Rule Optimization**: Updates extraction rules based on effectiveness data
 - **A/B Testing**: Validates significant rule changes before applying them
 - **Predictive Caching**: Pre-loads documentation for likely next operations
-- **Zero Manual Feedback**: Fully automated effectiveness detection and improvement
 
 ## How It Works
 

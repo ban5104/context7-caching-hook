@@ -142,6 +142,27 @@ class DatabaseManager:
                     confidence_score = ?, analyzed_at = ?
                 WHERE log_id = ?
             ''', (effectiveness_score, effectiveness_reason, confidence_score, datetime.now(), log_id))
+    
+    def update_session_intelligence(self, log_id: int, was_effective: bool, 
+                                  reasoning: str, confidence: float, rule_updated: bool):
+        """Update a session log with intelligent analysis results."""
+        # Convert boolean to effectiveness score for backward compatibility
+        effectiveness_score = 0.8 if was_effective else 0.2
+        
+        # Add rule update info to reasoning
+        if rule_updated:
+            reasoning = f"{reasoning} [RULE UPDATED]"
+        
+        with self.get_connection() as conn:
+            conn.execute('''
+                UPDATE session_logs 
+                SET effectiveness_score = ?, 
+                    effectiveness_reason = ?,
+                    confidence_score = ?,
+                    analyzed_at = CURRENT_TIMESTAMP,
+                    session_complete = ?
+                WHERE log_id = ?
+            ''', (effectiveness_score, reasoning, confidence, was_effective, log_id))
 
     def get_unanalyzed_sessions(self, limit: int = 50) -> list:
         """Get sessions that haven't been analyzed by LLM yet."""
